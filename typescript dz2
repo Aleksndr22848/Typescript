@@ -1,4 +1,4 @@
-// types.ts
+
 export type Discount = 
   | { kind: "percent"; value: number }
   | { kind: "fixed"; valueRub: number };
@@ -14,7 +14,7 @@ export interface Order {
   discount?: Discount;
 }
 
-// calculator.ts
+
 import { Discount, Order, Product } from './types';
 
 export class PriceCalculator {
@@ -25,32 +25,20 @@ export class PriceCalculator {
     return products.reduce((sum, product) => sum + (product.price * product.quantity), 0);
   }
 
-  /**
-   * Применяет скидку к сумме
-   * Использует дискриминирующее объединение для определения типа скидки
-   */
   applyDiscount(amount: number, discount: Discount): number {
     switch (discount.kind) {
       case "percent":
-        // Процентная скидка
         const discountAmount = amount * (discount.value / 100);
         return amount - discountAmount;
       
       case "fixed":
-        // Фиксированная скидка в рублях
-        // Не даём уйти в минус
         return Math.max(0, amount - discount.valueRub);
       
       default:
-        // Исчерпывающая проверка (exhaustive check)
         const _exhaustiveCheck: never = discount;
         throw new Error(`Неизвестный тип скидки: ${_exhaustiveCheck}`);
     }
   }
-
-  /**
-   * Рассчитывает итоговую стоимость заказа со скидкой
-   */
   calculateTotal(order: Order): number {
     const subtotal = this.calculateSubtotal(order.products);
     
@@ -60,10 +48,6 @@ export class PriceCalculator {
     
     return subtotal;
   }
-
-  /**
-   * Возвращает человеко-читаемое описание скидки
-   */
   getDiscountDescription(discount: Discount): string {
     switch (discount.kind) {
       case "percent":
@@ -75,10 +59,6 @@ export class PriceCalculator {
         return `Неизвестная скидка`;
     }
   }
-
-  /**
-   * Форматирует итоговый заказ для вывода
-   */
   formatOrder(order: Order): string {
     const subtotal = this.calculateSubtotal(order.products);
     const total = this.calculateTotal(order);
@@ -101,14 +81,11 @@ export class PriceCalculator {
     return result;
   }
 }
-
-// main.ts
 import { PriceCalculator } from './calculator';
 
-// Создаём экземпляр калькулятора
 const calculator = new PriceCalculator();
 
-// Пример 1: Процентная скидка
+
 const orderWithPercentDiscount: Order = {
   products: [
     { name: "Ноутбук", price: 75000, quantity: 1 },
@@ -118,7 +95,7 @@ const orderWithPercentDiscount: Order = {
   discount: { kind: "percent", value: 10 } // 10% скидка
 };
 
-// Пример 2: Фиксированная скидка
+
 const orderWithFixedDiscount: Order = {
   products: [
     { name: "Смартфон", price: 60000, quantity: 1 },
@@ -127,21 +104,21 @@ const orderWithFixedDiscount: Order = {
   discount: { kind: "fixed", valueRub: 5000 } // 5000 руб. скидка
 };
 
-// Пример 3: Заказ без скидки
+
 const orderWithoutDiscount: Order = {
   products: [
     { name: "Книга", price: 500, quantity: 3 }
   ]
 };
 
-// Выводим результаты
+
 console.log(calculator.formatOrder(orderWithPercentDiscount));
 console.log("\n");
 console.log(calculator.formatOrder(orderWithFixedDiscount));
 console.log("\n");
 console.log(calculator.formatOrder(orderWithoutDiscount));
 
-// Пример с проверкой граничных случаев
+
 const edgeCaseOrder: Order = {
   products: [
     { name: "Дешёвый товар", price: 100, quantity: 1 }
@@ -152,7 +129,7 @@ const edgeCaseOrder: Order = {
 console.log("\n=== ГРАНИЧНЫЙ СЛУЧАЙ ===");
 console.log(calculator.formatOrder(edgeCaseOrder));
 
-// Функция, демонстрирующая работу с дискриминирующим объединением
+
 function demonstrateDiscountType(discount: Discount): void {
   console.log(`Тип скидки: ${discount.kind}`);
   
